@@ -5,7 +5,11 @@ from sqlalchemy.ext.declarative import declarative_base
 
 # Check for DATABASE_URL environment variable (useful for Render deployments),
 # otherwise fallback to local SQLite database.
-SQLALCHEMY_DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///./birthday_app.db')
+# Find absolute path of the current directory to avoid path resolution errors on Render
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+default_db_path = os.path.join(BASE_DIR, 'birthday_app.db')
+
+SQLALCHEMY_DATABASE_URL = os.environ.get('DATABASE_URL', f'sqlite:///{default_db_path}')
 
 # Connect arguments are only needed for SQLite
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):

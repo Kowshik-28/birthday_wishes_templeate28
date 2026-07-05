@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL support files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+birthday_app.db
+birthday_app.db-journal
+birthday_app.db-shm
+birthday_app.db-wal
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# macOS files
+.DS_Store
