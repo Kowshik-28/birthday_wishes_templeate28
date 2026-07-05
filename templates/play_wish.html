@@ -1,0 +1,506 @@
+{% extends 'Layout.html' %}
+
+{% block title %}Happy Birthday, {{ wish.birthday_person_name }}!{% endblock %}
+
+{% block head %}
+<style>
+    /* Prevent scrolling during the interactive cards */
+    body {
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Decorative Background Elements -->
+<div class="bg-decorations" id="bgDecorations"></div>
+
+<div class="play-container">
+    <div class="player-card">
+        
+        <!-- ================= STAGE 1: INTRO ================= -->
+        <div class="stage active" id="stage-1">
+            <h1 class="stage-title">Happy Birthday, {{ wish.birthday_person_name }}! ❤️</h1>
+            
+            <div class="cropped-img-wrapper crop-stage1">
+                <img src="/static/images/birthday_bears.jpg" alt="Birthday Celebration Cartoon">
+            </div>
+            
+            <p class="stage-subtitle">Are you excited for what's next?</p>
+            
+            <div class="btn-choice-container">
+                <button onclick="goToStage(2)" class="btn btn-primary btn-yes btn-glow">Yes</button>
+                <button class="btn btn-no" id="noButton">No</button>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 2: BALLOONS POP ================= -->
+        <div class="stage" id="stage-2">
+            <h1 class="stage-title">Pop all 4 balloons 🎈</h1>
+            <p class="stage-subtitle">Tap each balloon to find a special message!</p>
+            
+            <div class="balloons-area" id="balloonsArea">
+                <div class="balloon blue" onclick="popBalloon(this, 'blue')">
+                    <div class="balloon-daisy"></div>
+                    <div class="balloon-string"></div>
+                </div>
+                <div class="balloon pink" onclick="popBalloon(this, 'pink')">
+                    <div class="balloon-daisy"></div>
+                    <div class="balloon-string"></div>
+                </div>
+                <div class="balloon green" onclick="popBalloon(this, 'green')">
+                    <div class="balloon-daisy"></div>
+                    <div class="balloon-string"></div>
+                </div>
+                <div class="balloon purple" onclick="popBalloon(this, 'purple')">
+                    <div class="balloon-daisy"></div>
+                    <div class="balloon-string"></div>
+                </div>
+            </div>
+            
+            <!-- Hidden until all 4 popped -->
+            <div class="special-message" id="specialMessage">
+                <div class="special-title">You are so special</div>
+                <button onclick="goToStage(3)" class="btn btn-primary btn-glow stage-btn-next">Continue</button>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 3: BLOW THE CANDLE ================= -->
+        <div class="stage" id="stage-3">
+            <h1 class="stage-title" id="stage3-title">Blow the candle, {{ wish.birthday_person_name }} 🎂</h1>
+            <p class="stage-subtitle" id="stage3-subtitle">Click the flame to blow out the candle!</p>
+            
+            <div class="cake-container" id="cakeContainer">
+                <div class="candle">
+                    <div class="candle-stripe"></div>
+                    <div class="candle-wick"></div>
+                    <div class="flame" id="candleFlame" onclick="blowOutCandle()">
+                        <div class="flame-inner"></div>
+                    </div>
+                    <div class="smoke-puff" id="smokePuff"></div>
+                </div>
+                <div class="cake">
+                    <div class="cake-chocolate"></div>
+                    <div class="cake-frosting"></div>
+                </div>
+            </div>
+            
+            <!-- Revealed after blowing out -->
+            <div class="wish-reveal-area" id="wishRevealArea">
+                <div class="wish-script">Close your eyes & make a wish</div>
+                <input type="text" class="input-wish-box" placeholder="Write your wish here..." id="wishInput">
+                <button onclick="goToStage(4)" class="btn btn-primary btn-glow stage-btn-next">Next Panel</button>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 4: BOUQUET ================= -->
+        <div class="stage" id="stage-4">
+            <h1 class="stage-title">Your Rose Bouquet 🌹</h1>
+            
+            <div class="cropped-img-wrapper crop-stage4">
+                <img src="/static/images/rose_bouquet.jpg" alt="Rose Bouquet">
+            </div>
+            
+            <p class="stage-subtitle">A special bouquet of roses just for you!</p>
+            
+            <button onclick="goToStage(5)" class="btn btn-primary btn-glow stage-btn-next">Next</button>
+        </div>
+
+        <!-- ================= STAGE 5: THE LETTER ================= -->
+        <div class="stage" id="stage-5">
+            <h1 class="stage-title">A Message From My Heart 💌</h1>
+            
+            <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+                <!-- Wax Seal Stamp -->
+                <div class="wax-seal" id="waxSeal">❤️</div>
+                
+                <!-- Front folds -->
+                <div class="envelope">
+                    <div class="envelope-front envelope-left"></div>
+                    <div class="envelope-front envelope-right"></div>
+                    <div class="envelope-front envelope-bottom"></div>
+                </div>
+                <!-- Flap -->
+                <div class="envelope-flap"></div>
+                
+                <!-- The Letter inside -->
+                <div class="letter-card" id="letterCard">
+                    <div class="letter-title">
+                        <span>A Special Note ✨</span>
+                        <div class="letter-heart-badge">❤️</div>
+                    </div>
+                    <div class="letter-body">{{ wish.message }}</div>
+                    
+                    <!-- Bottom right small bear decoration from screenshots -->
+                    <img src="/static/images/birthday_bears.jpg" class="letter-illustration" style="display:none;">
+                </div>
+            </div>
+            
+            <p class="stage-subtitle" id="envelopeInstructions" style="margin-top: 20px;">Tap the envelope to open it</p>
+            
+            <button onclick="goToStage(6)" class="btn btn-primary btn-glow stage-btn-next" id="letterNextBtn" style="display: none; margin-top: 15px;">One last surprise ➔</button>
+        </div>
+
+        <!-- ================= STAGE 6: FINAL SCREEN ================= -->
+        <div class="stage" id="stage-6">
+            <div class="cropped-img-wrapper crop-stage6" style="border-radius: 16px; width: 260px; height: 200px;">
+                <img src="/static/images/friends_celebration.jpg" alt="Brown and Cony Celebration">
+            </div>
+            
+            <h2 class="logo-text" style="font-size: 1.8rem; margin: 15px 0 5px;">Lots of love for you ❤️</h2>
+            <p class="stage-subtitle" style="font-size: 0.95rem; margin-bottom: 20px;">
+                Once again, Happy Birthday {{ wish.birthday_person_name }} 💕!<br>Hope you loved your surprise.
+            </p>
+            
+            <button onclick="restartSurprise()" class="btn btn-secondary btn-sm" style="margin-bottom: 15px; width: 100%;">↺ Replay</button>
+            <a href="/auth/register-page" class="btn btn-primary btn-glow btn-sm" style="width: 100%;">✨ Create a surprise for your friend</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentStage = 1;
+    let poppedCount = 0;
+    
+    // Web Audio API Synthesizer
+    let audioCtx = null;
+    
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+    
+    // Resume audio context on first user click
+    document.body.addEventListener('click', initAudio, { once: true });
+    document.body.addEventListener('touchstart', initAudio, { once: true });
+
+    function playPopSound() {
+        try {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.12);
+            
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+        } catch (e) {
+            console.log("Audio popup failed", e);
+        }
+    }
+
+    function playWhooshSound() {
+        try {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(280, audioCtx.currentTime + 0.45);
+            
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.45);
+        } catch (e) {
+            console.log("Audio whoosh failed", e);
+        }
+    }
+    
+    // Initialize DODGE button logic for Stage 1
+    const noBtn = document.getElementById('noButton');
+    if (noBtn) {
+        const moveNoButton = () => {
+            const container = document.querySelector('.btn-choice-container');
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // Random bounds
+            const maxX = containerRect.width - btnRect.width;
+            const maxY = containerRect.height - btnRect.height;
+            
+            // Generate coordinates
+            const randomX = Math.random() * maxX;
+            // Let the button float slightly out of bounds vertically to make it dynamic
+            const randomY = (Math.random() * 80) - 40; 
+            
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        };
+
+        // Desktop mouse hover dodge
+        noBtn.addEventListener('mouseover', moveNoButton);
+        // Mobile tap dodge
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+    }
+
+    // Page navigation helper
+    function goToStage(stageNum) {
+        document.querySelectorAll('.stage').forEach(stage => {
+            stage.classList.remove('active');
+        });
+        
+        const nextStage = document.getElementById(`stage-${stageNum}`);
+        if (nextStage) {
+            nextStage.classList.add('active');
+            currentStage = stageNum;
+        }
+        
+        // Trigger specific animations or events for stages
+        if (stageNum === 2) {
+            startConfetti(25); // Light floating confetti
+        } else if (stageNum === 3) {
+            stopConfetti();
+        } else if (stageNum === 6) {
+            startConfetti(150); // Heavy celebratory confetti rain!
+        }
+    }
+
+    // Restart surprise player
+    function restartSurprise() {
+        poppedCount = 0;
+        
+        // Reset balloons
+        document.querySelectorAll('.balloon').forEach(b => {
+            b.style.display = 'flex';
+            b.style.transform = 'scale(1)';
+            b.style.opacity = '1';
+        });
+        
+        // Reset special text and continue button in stage 2
+        document.getElementById('specialMessage').classList.remove('show');
+        document.getElementById('balloonsArea').style.display = 'grid';
+        
+        // Reset cake & candle in stage 3
+        const flame = document.getElementById('candleFlame');
+        flame.classList.remove('blown-out');
+        flame.style.display = 'block';
+        document.getElementById('wishRevealArea').classList.remove('show');
+        document.getElementById('cakeContainer').style.opacity = '1';
+        document.getElementById('stage3-title').textContent = "Blow the candle, {{ wish.birthday_person_name }} 🎂";
+        document.getElementById('stage3-subtitle').textContent = "Click the flame to blow out the candle!";
+        document.getElementById('wishInput').value = "";
+        
+        // Reset envelope in stage 5
+        const env = document.getElementById('envelopeWrapper');
+        env.classList.remove('open');
+        document.getElementById('letterNextBtn').style.display = 'none';
+        document.getElementById('envelopeInstructions').textContent = 'Tap the envelope to open it';
+        document.getElementById('envelopeInstructions').style.display = 'block';
+        
+        stopConfetti();
+        goToStage(1);
+        
+        // Reset No button style
+        if (noBtn) {
+            noBtn.style.left = '';
+            noBtn.style.top = '';
+        }
+    }
+
+    // Balloon Pop Logic
+    function popBalloon(balloonEl, color) {
+        // Play synthesizer pop sound!
+        playPopSound();
+
+        // Visual Pop explosion
+        balloonEl.style.transform = 'scale(1.5)';
+        balloonEl.style.opacity = '0';
+        
+        // Spawn small confetti particles around this balloon
+        const rect = balloonEl.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        spawnPopConfetti(centerX, centerY, color);
+        
+        setTimeout(() => {
+            balloonEl.style.display = 'none';
+            poppedCount++;
+            
+            if (poppedCount === 4) {
+                // All popped! Hide balloons area, show special card
+                document.getElementById('balloonsArea').style.display = 'none';
+                
+                const specialMsg = document.getElementById('specialMessage');
+                specialMsg.classList.add('show');
+                
+                // Show celebration rain
+                startConfetti(100);
+            }
+        }, 150);
+    }
+
+    // Candle blow-out logic
+    function blowOutCandle() {
+        const flame = document.getElementById('candleFlame');
+        const smoke = document.getElementById('smokePuff');
+        
+        // Play soft blow-out whoosh sound!
+        playWhooshSound();
+
+        flame.classList.add('blown-out');
+        
+        // Trigger puff of smoke animation
+        smoke.classList.add('animate');
+        
+        setTimeout(() => {
+            flame.style.display = 'none';
+            
+            // Animate cake fading down slightly
+            document.getElementById('cakeContainer').style.transition = 'opacity 0.8s ease';
+            document.getElementById('cakeContainer').style.opacity = '0.3';
+            
+            // Show Make a Wish panel
+            document.getElementById('stage3-title').textContent = "Close your eyes & make a wish 🌟";
+            document.getElementById('stage3-subtitle').textContent = "Make a silent wish for the year ahead.";
+            document.getElementById('wishRevealArea').classList.add('show');
+        }, 600);
+    }
+
+    // Envelope Open Logic
+    function openEnvelope() {
+        const env = document.getElementById('envelopeWrapper');
+        if (env.classList.contains('open')) return; // Already open
+        
+        // Play envelope opening whoosh sound!
+        playWhooshSound();
+
+        env.classList.add('open');
+        document.getElementById('envelopeInstructions').style.display = 'none';
+        
+        // Spark a small shower of pink hearts when the letter slides up!
+        setTimeout(() => {
+            const rect = env.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2 - 50;
+            spawnPopConfetti(centerX, centerY, 'pink');
+        }, 300);
+
+        // After transition finishes, show Next Button
+        setTimeout(() => {
+            document.getElementById('letterNextBtn').style.display = 'block';
+        }, 1000);
+    }
+
+    /* CONFETTI SYSTEM */
+    let confettiInterval = null;
+    
+    function startConfetti(count) {
+        stopConfetti();
+        const decor = document.getElementById('bgDecorations');
+        if (!decor) return;
+        
+        decor.innerHTML = '';
+        
+        const colors = ['#ff6b8b', '#ff9ff3', '#54a0ff', '#5f27cd', '#ffda79', '#1dd1a1'];
+        
+        for (let i = 0; i < count; i++) {
+            const conf = document.createElement('div');
+            conf.classList.add('confetti');
+            
+            // Random properties
+            const size = Math.random() * 8 + 5;
+            conf.style.width = `${size}px`;
+            conf.style.height = `${size}px`;
+            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            conf.style.left = `${Math.random() * 100}vw`;
+            conf.style.top = `-${Math.random() * 20}px`;
+            conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            // Randomized falling speeds & delays
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 4;
+            conf.style.animation = `fallConfetti ${duration}s linear ${delay}s infinite`;
+            
+            decor.appendChild(conf);
+        }
+    }
+    
+    function stopConfetti() {
+        if (confettiInterval) clearInterval(confettiInterval);
+        const decor = document.getElementById('bgDecorations');
+        if (decor) decor.innerHTML = '';
+    }
+    
+    function spawnPopConfetti(x, y, color) {
+        const colors = {
+            blue: ['#54a0ff', '#00d2d3', '#e0f7fa'],
+            pink: ['#ff9ff3', '#f368e0', '#ffebee'],
+            green: ['#55efc4', '#00b894', '#e8f8f5'],
+            purple: ['#a29bfe', '#6c5ce7', '#f3e5f5']
+        };
+        
+        const pColors = colors[color] || ['#ff6b8b', '#ffd32c', '#ff9f43'];
+        const container = document.body;
+        
+        for (let i = 0; i < 15; i++) {
+            const part = document.createElement('div');
+            part.style.position = 'fixed';
+            part.style.left = `${x}px`;
+            part.style.top = `${y}px`;
+            part.style.width = `${Math.random() * 6 + 4}px`;
+            part.style.height = `${Math.random() * 6 + 4}px`;
+            part.style.backgroundColor = pColors[Math.floor(Math.random() * pColors.length)];
+            part.style.borderRadius = '50%';
+            part.style.zIndex = '99';
+            part.style.pointerEvents = 'none';
+            
+            // Random direction
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 6 + 4;
+            const dx = Math.cos(angle) * velocity;
+            const dy = Math.sin(angle) * velocity;
+            
+            container.appendChild(part);
+            
+            // Move particle
+            let posX = x;
+            let posY = y;
+            let gravity = 0.2;
+            let opacity = 1;
+            
+            const animatePart = () => {
+                posX += dx;
+                posY += dy + gravity;
+                gravity += 0.15;
+                opacity -= 0.04;
+                
+                part.style.left = `${posX}px`;
+                part.style.top = `${posY}px`;
+                part.style.opacity = opacity;
+                
+                if (opacity > 0) {
+                    requestAnimationFrame(animatePart);
+                } else {
+                    part.remove();
+                }
+            };
+            
+            requestAnimationFrame(animatePart);
+        }
+    }
+</script>
+{% endblock %}
