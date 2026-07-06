@@ -304,6 +304,7 @@
             // Let the button float slightly out of bounds vertically to make it dynamic
             const randomY = (Math.random() * 80) - 40; 
             
+            noBtn.style.position = 'absolute';
             noBtn.style.left = `${randomX}px`;
             noBtn.style.top = `${randomY}px`;
         };
@@ -383,6 +384,7 @@
         
         // Reset No button style
         if (noBtn) {
+            noBtn.style.position = '';
             noBtn.style.left = '';
             noBtn.style.top = '';
         }
