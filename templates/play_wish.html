@@ -9,6 +9,12 @@
         overflow-x: hidden;
         overflow-y: auto;
     }
+    {% if wish.video_url %}
+    body {
+        background: none !important;
+        background-color: #fffefb !important;
+    }
+    {% endif %}
 </style>
 {% endblock %}
 
@@ -197,6 +203,27 @@
 <script>
     let currentStage = 1;
     let poppedCount = 0;
+    
+    // Force background video autoplay on mobile/laptops (handles low-power mode and browser restrictions)
+    document.addEventListener('DOMContentLoaded', () => {
+        const bgVideo = document.querySelector('.video-bg');
+        if (bgVideo) {
+            const playPromise = bgVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay prevented, waiting for user click/tap:", error);
+                    // Start playing on first click/tap anywhere on the screen
+                    const startVideoOnTouch = () => {
+                        bgVideo.play().catch(e => console.log("Manual play failed:", e));
+                        document.removeEventListener('click', startVideoOnTouch);
+                        document.removeEventListener('touchstart', startVideoOnTouch);
+                    };
+                    document.addEventListener('click', startVideoOnTouch);
+                    document.addEventListener('touchstart', startVideoOnTouch);
+                });
+            }
+        }
+    });
     
     // Web Audio API Synthesizer
     let audioCtx = null;
