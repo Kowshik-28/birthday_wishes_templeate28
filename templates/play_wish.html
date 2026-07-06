@@ -4,9 +4,10 @@
 
 {% block head %}
 <style>
-    /* Prevent scrolling during the interactive cards */
+    /* Prevent horizontal overflow scrolling, allow vertical scrolling if content is cut off on small screens */
     body {
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 </style>
 {% endblock %}
@@ -300,6 +301,7 @@
         flame.style.display = 'block';
         document.getElementById('wishRevealArea').classList.remove('show');
         document.getElementById('cakeContainer').style.opacity = '1';
+        document.getElementById('cakeContainer').style.height = ''; // Reset to default CSS height (250px)
         document.getElementById('stage3-title').textContent = "Blow the candle, {{ wish.birthday_person_name }} 🎂";
         document.getElementById('stage3-subtitle').textContent = "Click the flame to blow out the candle!";
         document.getElementById('wishInput').value = "";
@@ -369,9 +371,10 @@
         setTimeout(() => {
             flame.style.display = 'none';
             
-            // Animate cake fading down slightly
-            document.getElementById('cakeContainer').style.transition = 'opacity 0.8s ease';
+            // Animate cake fading down slightly and shrinking container height to fit on smaller screens
+            document.getElementById('cakeContainer').style.transition = 'all 0.8s ease';
             document.getElementById('cakeContainer').style.opacity = '0.3';
+            document.getElementById('cakeContainer').style.height = '140px';
             
             // Show Make a Wish panel
             document.getElementById('stage3-title').textContent = "Close your eyes & make a wish 🌟";
