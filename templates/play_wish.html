@@ -13,6 +13,16 @@
 {% endblock %}
 
 {% block content %}
+{% if wish.video_url %}
+<!-- Background Video Container (Optional) -->
+<div class="video-bg-container">
+    <video autoplay loop muted playsinline class="video-bg" src="{{ wish.video_url }}">
+        Your browser does not support the video tag.
+    </video>
+    <div class="video-bg-overlay"></div>
+</div>
+{% endif %}
+
 <!-- Decorative Background Elements -->
 <div class="bg-decorations" id="bgDecorations"></div>
 

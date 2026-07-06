@@ -31,6 +31,12 @@
                         <small class="helper-text">You can write anything! Express your appreciation, share inside jokes, or recall good memories.</small>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="video_url">Background Video URL (Optional)</label>
+                        <input type="url" id="video_url" name="video_url" placeholder="e.g. https://example.com/memories.mp4">
+                        <small class="helper-text">Paste a direct link to an MP4/WebM video of your memories to play as a faded background.</small>
+                    </div>
+                    
                     <button type="submit" class="btn btn-primary btn-glow">Generate Surprise Link</button>
                 </form>
             </div>
@@ -95,7 +101,8 @@
 
             const payload = {
                 birthday_person_name: data.birthday_person_name,
-                message: data.message
+                message: data.message,
+                video_url: data.video_url || null
             };
 
             try {

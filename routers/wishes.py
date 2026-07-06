@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, Path, Request, status
@@ -33,6 +33,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 class WishCreateRequest(BaseModel):
     birthday_person_name: str = Field(min_length=1, max_length=100)
     message: str = Field(min_length=1)
+    video_url: Optional[str] = Field(default=None)
 
 
 def redirect_to_login():
@@ -97,6 +98,7 @@ async def create_wish(request: Request, db: db_dependency, wish_req: WishCreateR
         wish_uuid=str(uuid.uuid4()),
         birthday_person_name=wish_req.birthday_person_name,
         message=wish_req.message,
+        video_url=wish_req.video_url,
         owner_id=user.get("id")
     )
 

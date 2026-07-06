@@ -1316,6 +1316,36 @@ body {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
+/* Background Video (Spooky White Style) */
+.video-bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 0; /* Behind play container (10) but covers body base */
+    pointer-events: none;
+}
+
+.video-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3; /* Soft visibility of memories */
+}
+
+.video-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.82); /* Spooky white wash */
+    backdrop-filter: blur(6px); /* Dreamy frosted effect */
+    -webkit-backdrop-filter: blur(6px);
+}
+
 /* Responsive Overrides for Mobile Phones */
 @media (max-width: 480px) {
     .player-card {

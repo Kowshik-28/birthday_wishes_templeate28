@@ -23,5 +23,6 @@ class Wishes(Base):
     wish_uuid = Column(String, unique=True, index=True, default=lambda: str(uuid.uuid4()))
     birthday_person_name = Column(String, nullable=False)
     message = Column(Text, nullable=False)
+    video_url = Column(String, nullable=True) # Optional background video URL
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
