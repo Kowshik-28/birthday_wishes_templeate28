@@ -42,6 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
             const form = event.target;
+            
+            // Disable button and show spinner
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="btn-spinner"></span>Signing In...';
+
             const formData = new FormData(form);
             const payload = new URLSearchParams();
             for (const [key, value] of formData.entries()) {
@@ -67,10 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const errorData = await response.json();
                     alert(`Login Failed: ${errorData.detail || 'Invalid username or password'}`);
+                    // Restore button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
                 }
             } catch (error) {
                 console.error('Error during login:', error);
                 alert('An error occurred. Please try again.');
+                // Restore button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
             }
         });
     }
@@ -88,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Passwords do not match!");
                 return;
             }
+
+            // Disable button and show spinner
+            const submitBtn = registerForm.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="btn-spinner"></span>Creating Account...';
 
             const payload = {
                 email: data.email,
@@ -114,10 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const errorData = await response.json();
                     alert(`Registration Failed: ${errorData.detail || 'Could not register user'}`);
+                    // Restore button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
                 }
             } catch (error) {
                 console.error('Error during registration:', error);
                 alert('An error occurred. Please try again.');
+                // Restore button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
             }
         });
     }
