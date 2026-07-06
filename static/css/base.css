@@ -1336,7 +1336,7 @@ body {
     height: 100%;
     object-fit: cover;
     transform: translate(-50%, -50%);
-    opacity: 0.8; /* Highly visible memories */
+    opacity: 0.95; /* Highly visible memories, not covered */
 }
 
 .video-bg-overlay {
@@ -1345,9 +1345,9 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.45); /* Soft white spooky blend */
-    backdrop-filter: blur(2px); /* Mild frosted effect to preserve text readability */
-    -webkit-backdrop-filter: blur(2px);
+    background: rgba(255, 255, 255, 0.15); /* Very light tint so it doesn't block/cover the video */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 /* Responsive Overrides for Mobile Phones */
