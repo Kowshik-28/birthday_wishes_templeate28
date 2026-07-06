@@ -1,7 +1,7 @@
 from typing import Annotated, Optional
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, Path, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, status, Form, File, UploadFile
 from jose import JWTError
 from starlette import status
 from models import Wishes, Users
@@ -10,6 +10,8 @@ from routers.auth import get_current_user, decode_token
 from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 import uuid
+import os
+import shutil
 
 templates = Jinja2Templates(directory="templates")
 
@@ -85,7 +87,13 @@ async def render_play_wish(request: Request, wish_uuid: str, db: db_dependency):
 ### Endpoints ###
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_wish(request: Request, db: db_dependency, wish_req: WishCreateRequest):
+async def create_wish(
+    request: Request, 
+    db: db_dependency,
+    birthday_person_name: str = Form(...),
+    message: str = Form(...),
+    video_file: Optional[UploadFile] = File(None)
+):
     token = request.cookies.get('access_token')
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
@@ -94,11 +102,29 @@ async def create_wish(request: Request, db: db_dependency, wish_req: WishCreateR
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
 
+    new_uuid = str(uuid.uuid4())
+    video_url = None
+
+    if video_file and video_file.filename:
+        # Create static/videos directory if it doesn't exist
+        videos_dir = os.path.join("static", "videos")
+        os.makedirs(videos_dir, exist_ok=True)
+        
+        # Save file with a unique name based on UUID
+        file_ext = os.path.splitext(video_file.filename)[1]
+        video_filename = f"{new_uuid}{file_ext}"
+        video_path = os.path.join(videos_dir, video_filename)
+        
+        with open(video_path, "wb") as buffer:
+            shutil.copyfileobj(video_file.file, buffer)
+            
+        video_url = f"/static/videos/{video_filename}"
+
     new_wish = Wishes(
-        wish_uuid=str(uuid.uuid4()),
-        birthday_person_name=wish_req.birthday_person_name,
-        message=wish_req.message,
-        video_url=wish_req.video_url,
+        wish_uuid=new_uuid,
+        birthday_person_name=birthday_person_name,
+        message=message,
+        video_url=video_url,
         owner_id=user.get("id")
     )
 
@@ -121,6 +147,15 @@ async def delete_wish(request: Request, wish_id: int, db: db_dependency):
     wish = db.query(Wishes).filter(Wishes.id == wish_id, Wishes.owner_id == user.get("id")).first()
     if not wish:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Wish not found or not owned by you")
+
+    # If there is a local video file, delete it
+    if wish.video_url and wish.video_url.startswith("/static/videos/"):
+        try:
+            local_path = wish.video_url.lstrip("/")
+            if os.path.exists(local_path):
+                os.remove(local_path)
+        except Exception as e:
+            print(f"Error deleting video file: {e}")
 
     db.delete(wish)
     db.commit()

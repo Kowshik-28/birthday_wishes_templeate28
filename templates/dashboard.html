@@ -32,9 +32,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="video_url">Background Video URL (Optional)</label>
-                        <input type="url" id="video_url" name="video_url" placeholder="e.g. https://example.com/memories.mp4">
-                        <small class="helper-text">Paste a direct link to an MP4/WebM video of your memories to play as a faded background.</small>
+                        <label for="video_file">Background Video (Optional)</label>
+                        <input type="file" id="video_file" name="video_file" accept="video/mp4,video/webm,video/quicktime">
+                        <small class="helper-text">Select an MP4, WebM, or MOV video file from your phone or laptop to play as a looping, faded background.</small>
                     </div>
                     
                     <button type="submit" class="btn btn-primary btn-glow">Generate Surprise Link</button>
@@ -97,21 +97,13 @@
         createWishForm.addEventListener('submit', async function (event) {
             event.preventDefault();
             const formData = new FormData(createWishForm);
-            const data = Object.fromEntries(formData.entries());
-
-            const payload = {
-                birthday_person_name: data.birthday_person_name,
-                message: data.message,
-                video_url: data.video_url || null
-            };
 
             try {
                 const response = await fetch('/wishes/create', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    // Note: Do NOT set Content-Type header when sending FormData!
+                    // The browser will automatically set it to multipart/form-data with boundaries.
+                    body: formData
                 });
 
                 if (response.ok) {
