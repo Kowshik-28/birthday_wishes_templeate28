@@ -124,22 +124,44 @@
                 <!-- Flap -->
                 <div class="envelope-flap"></div>
                 
-                <!-- The Letter inside -->
-                <div class="letter-card" id="letterCard">
-                    <div class="letter-title">
-                        <span>A Special Note ✨</span>
-                        <div class="letter-heart-badge">❤️</div>
-                    </div>
-                    <div class="letter-body">{{ wish.message }}</div>
+                <!-- The Letter inside (Clicking it re-opens the modal) -->
+                <div class="letter-card" id="letterCard" onclick="showLetterModal(event)">
+                    <!-- Heart Badge at the top right -->
+                    <div class="letter-heart-badge">♥</div>
+                    
+                    <!-- Bottom left small heart decoration -->
+                    <div class="letter-heart-deco">❤️</div>
                     
                     <!-- Bottom right small bear decoration from screenshots -->
-                    <img src="/static/images/birthday_bears.jpg" class="letter-illustration" style="display:none;">
+                    <img src="/static/images/friends_celebration.jpg" class="letter-illustration" alt="Celebration Decoration">
                 </div>
             </div>
             
             <p class="stage-subtitle" id="envelopeInstructions" style="margin-top: 20px;">Tap the envelope to open it</p>
             
             <button onclick="goToStage(6)" class="btn btn-primary btn-glow stage-btn-next" id="letterNextBtn" style="display: none; margin-top: 15px;">One last surprise ➔</button>
+
+            <!-- Dedicated Readable Letter Modal (Created separately for ultimate legibility) -->
+            <div class="letter-modal" id="letterModal" onclick="closeLetterModal()">
+                <div class="letter-modal-content" onclick="event.stopPropagation()">
+                    <span class="letter-modal-close" onclick="closeLetterModal()">&times;</span>
+                    
+                    <div class="letter-modal-header">
+                        <h3>A Special Note For You ✨</h3>
+                        <div class="letter-heart-badge">♥</div>
+                    </div>
+                    
+                    <div class="letter-modal-body">
+                        {{ wish.message }}
+                    </div>
+                    
+                    <div class="letter-modal-footer">
+                        <span class="letter-modal-heart">❤️</span>
+                        <button onclick="goToStage(6); closeLetterModal();" class="btn btn-primary btn-glow btn-sm">One last surprise ➔</button>
+                        <img src="/static/images/friends_celebration.jpg" class="letter-modal-sticker" alt="Celebration Sticker">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ================= STAGE 6: FINAL SCREEN ================= -->
@@ -313,6 +335,12 @@
         document.getElementById('envelopeInstructions').textContent = 'Tap the envelope to open it';
         document.getElementById('envelopeInstructions').style.display = 'block';
         
+        // Reset letter modal
+        const modal = document.getElementById('letterModal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
+        
         stopConfetti();
         goToStage(1);
         
@@ -402,10 +430,27 @@
             spawnPopConfetti(centerX, centerY, 'pink');
         }, 300);
 
-        // After transition finishes, show Next Button
+        // After transition finishes, show Next Button and reveal the readable modal
         setTimeout(() => {
             document.getElementById('letterNextBtn').style.display = 'block';
-        }, 1000);
+            showLetterModal();
+        }, 900);
+    }
+
+    function showLetterModal(e) {
+        if (e) e.stopPropagation(); // Stop click bubbling
+        const modal = document.getElementById('letterModal');
+        if (modal) {
+            modal.classList.add('show');
+            playWhooshSound();
+        }
+    }
+
+    function closeLetterModal() {
+        const modal = document.getElementById('letterModal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
     }
 
     /* CONFETTI SYSTEM */

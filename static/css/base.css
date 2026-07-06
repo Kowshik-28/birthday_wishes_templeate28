@@ -902,6 +902,7 @@ body {
     bottom: 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     z-index: 2;
+    transition: opacity 0.8s ease;
 }
 
 /* Triangles forming envelope folds */
@@ -911,6 +912,7 @@ body {
     height: 0;
     border-style: solid;
     z-index: 4;
+    transition: opacity 0.8s ease;
 }
 
 .envelope-left {
@@ -946,13 +948,18 @@ body {
     border-width: 100px 140px 0 140px;
     border-color: #f472b6 transparent transparent transparent;
     transform-origin: top center;
-    transition: transform 0.6s ease;
+    transition: transform 0.6s ease, opacity 0.6s ease;
     z-index: 6;
 }
 
 .envelope-wrapper.open .envelope-flap {
     transform: rotateX(180deg);
     z-index: 1; /* Drop behind as it opens */
+    opacity: 0.15; /* Soften when opened */
+}
+
+.envelope-wrapper.open .envelope {
+    opacity: 0.15; /* Soften when opened so letter stands out */
 }
 
 /* Letter inside the envelope */
@@ -962,69 +969,102 @@ body {
     left: 10px;
     width: 260px;
     height: 180px;
-    background: #fffef9; /* Off-white warm paper color */
-    background-image: linear-gradient(rgba(236, 72, 153, 0.05) 1px, transparent 1px);
-    background-size: 100% 24px; /* Warm paper lines */
-    border-radius: 8px;
+    background: #fffef9; /* Solid off-white warm paper color */
+    border-radius: 16px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    padding: 24px 20px 20px 20px;
+    padding: 25px 25px 45px 25px;
     text-align: left;
-    transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
+    transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), 
+                width 0.8s cubic-bezier(0.19, 1, 0.22, 1), 
+                left 0.8s cubic-bezier(0.19, 1, 0.22, 1), 
+                padding 0.8s cubic-bezier(0.19, 1, 0.22, 1),
+                opacity 0.6s ease;
     z-index: 3;
-    opacity: 0.8;
+    opacity: 0; /* Hidden inside the closed envelope */
     overflow: hidden;
 }
 
 .envelope-wrapper.open .letter-card {
-    transform: translateY(-130px) scale(1.05);
+    left: 50%;
+    transform: translateX(-50%) translateY(-155px) scale(1);
     opacity: 1;
     z-index: 7; /* Slide above the bottom fold */
+    width: 380px;
+    max-width: 92vw;
     height: auto;
-    min-height: 280px;
-    max-height: 320px;
+    min-height: 300px;
+    max-height: 420px;
     overflow-y: auto;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-}
-
-.letter-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    box-shadow: 0 15px 35px rgba(255, 107, 139, 0.2);
+    padding: 30px 30px 65px 30px;
 }
 
 .letter-heart-badge {
-    width: 20px;
-    height: 20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 34px;
+    height: 34px;
     background: var(--primary);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 0.6rem;
+    font-size: 0.95rem;
+    box-shadow: 0 3px 8px rgba(255, 107, 139, 0.3);
+    z-index: 10;
+}
+
+.letter-heart-deco {
+    position: absolute;
+    bottom: 20px;
+    left: 25px;
+    font-size: 1.3rem;
+    line-height: 1;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .letter-body {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 0.95rem;
-    line-height: 24px; /* Lines match the 24px background-size */
-    color: #4a4a4a;
-    font-style: italic;
+    font-family: 'Outfit', var(--font);
+    font-size: 1.15rem; /* Clean modern font size */
+    font-weight: 500;
+    line-height: 1.65; /* Generous line height for ultimate reading comfort */
+    color: #2d3436; /* High-contrast dark charcoal text */
     white-space: pre-wrap;
-    padding-top: 4px;
+    padding-top: 15px;
+    margin-right: 15px;
 }
 
 .letter-illustration {
     position: absolute;
-    bottom: 10px;
-    right: 15px;
-    width: 35px;
-    height: auto;
-    opacity: 0.8;
+    bottom: 15px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    opacity: 0.95;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Premium scrollbar for the letter-card */
+.letter-card::-webkit-scrollbar {
+    width: 6px;
+}
+.letter-card::-webkit-scrollbar-track {
+    background: transparent;
+}
+.letter-card::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 139, 0.25);
+    border-radius: 10px;
+}
+.letter-card::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 139, 0.45);
 }
 
 /* Slide in out helper animations */
@@ -1139,5 +1179,209 @@ body {
     100% {
         transform: translateY(100vh) rotate(360deg);
         opacity: 0;
+    }
+}
+
+/* Separate Dedicated Letter Modal Overlay (for clear, readable display) */
+.letter-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 20px;
+}
+
+.letter-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.letter-modal-content {
+    background: #fffef9; /* Warm off-white solid premium background */
+    width: 100%;
+    max-width: 420px;
+    height: 90%;
+    max-height: 520px;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(255, 107, 139, 0.22);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.letter-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.25s ease, transform 0.25s ease;
+    z-index: 10;
+}
+
+.letter-modal-close:hover {
+    color: var(--primary);
+    transform: rotate(90deg);
+}
+
+.letter-modal-header {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.letter-modal-header h3 {
+    font-size: 1.3rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.letter-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    font-family: 'Outfit', var(--font);
+    font-size: 1.25rem; /* Spacious, readable font size */
+    line-height: 1.7; /* Generous spacing for ultimate legibility */
+    color: #2d3436; /* Dark charcoal text for strong contrast */
+    white-space: pre-wrap;
+    text-align: left;
+    padding-right: 8px;
+    margin-bottom: 20px;
+}
+
+/* Premium scrollbar for the modal body */
+.letter-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+.letter-modal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+.letter-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 139, 0.25);
+    border-radius: 10px;
+}
+.letter-modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 139, 0.45);
+}
+
+.letter-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.letter-modal-heart {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.letter-modal-sticker {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Responsive Overrides for Mobile Phones */
+@media (max-width: 480px) {
+    .player-card {
+        padding: 20px;
+        min-height: 540px;
+    }
+    
+    .stage-title {
+        font-size: 1.7rem;
+        margin-bottom: 15px;
+    }
+    
+    .stage-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+    
+    /* Letter Modal mobile overrides */
+    .letter-modal {
+        padding: 10px;
+    }
+    
+    .letter-modal-content {
+        padding: 22px 20px 20px 20px;
+        border-radius: 18px;
+    }
+    
+    .letter-modal-header {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+    }
+    
+    .letter-modal-header h3 {
+        font-size: 1.15rem;
+    }
+    
+    .letter-modal-body {
+        font-size: 1.1rem; /* Slightly smaller for mobile reading */
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    
+    .letter-modal-sticker {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .letter-modal-footer {
+        padding-top: 10px;
+    }
+    
+    /* Cake container mobile adjustments */
+    .cake-container {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .cake {
+        width: 160px;
+        height: 90px;
+    }
+    
+    /* Crop circles slightly smaller on mobile */
+    .cropped-img-wrapper {
+        width: 200px;
+        height: 200px;
+        margin-bottom: 20px;
     }
 }
