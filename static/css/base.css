@@ -1350,6 +1350,30 @@ body {
     -webkit-backdrop-filter: none;
 }
 
+/* Submit Button Loading Spinner */
+.btn-primary:disabled {
+    background: linear-gradient(135deg, #ffa8b8 0%, #ff8da6 100%) !important;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: btnSpin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: -3px;
+}
+
+@keyframes btnSpin {
+    to { transform: rotate(360deg); }
+}
+
 /* Responsive Overrides for Mobile Phones */
 @media (max-width: 480px) {
     .player-card {
